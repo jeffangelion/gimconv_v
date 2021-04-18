@@ -43,8 +43,6 @@ Parent block for image (`0x04`) and palette (`0x05`) blocks
 |8     |2     |Image width in pixels|
 |10    |2     |Image heigth in pixels|
 |12    |2     |Image ?BPP alignment?|
-<!-- Row of pixel blocks -->
-<!-- Pixels are row-major but restricted by block length -->
 |14    |2     |Image ?pitch alignment?| <!--  -->
 |16    |2     |Image ?heigth alignment?|
 |18    |6     |?Padding?|
@@ -56,8 +54,7 @@ Parent block for image (`0x04`) and palette (`0x05`) blocks
 |42    |2     |Number of levels|
 |44    |2     |Frame type: `0x03` - SEQUENCE|
 |46    |2     |Frame count|
-<!-- Optional user data skipped -->
-|48    |4     |?Frame offset?|
+|48    |4     |?Frame offset?| <!-- Optional user data skipped -->
 |52    |var   |Padding (mod 16 = 0)|
 |52+var|var2  |Block data|
 
