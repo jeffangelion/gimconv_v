@@ -12,24 +12,57 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+*/
 
 module main
 
+import henrixounez.vpng
+import os
 import gim
 import utils
-import os
+
+fn pixel(red byte, green byte, blue byte) vpng.Pixel {
+	return vpng.Pixel(vpng.TrueColor {
+		red,
+		green,
+		blue
+	})
+}
 
 fn main() {
-	input_file := os.open(os.args[1]) or { panic("Can't open file") }
+	if os.args.len != 3{
+		println('Usage: $os.args[0] input_gim_file output_png_palette')
+		return
+	}
+	palette_ihdr := vpng.IHDR {
+		16, // Width
+		16, // Height
+		8,  // 8-bit color depth
+		2,  // Color used
+		0,  // Deflate
+		0,  // Filter method
+		0   // No interlace
+	}
+	mut palette := vpng.PngFile {
+		palette_ihdr,
+		16,
+		16,
+		vpng.PixelType.truecolor,
+		[]vpng.Pixel{len: 256, init: pixel(0, 0, 0)}
+	}
+	input_gim_file := os.open(os.args[1]) or { panic("Can't open file") }
 	eof := os.file_size(os.args[1])
-	if utils.check_file_signature(input_file.read_bytes_at(8, 0).bytestr()) == 0 {
+	if utils.check_file_signature(input_gim_file.read_bytes_at(8, 0).bytestr()) == 0 {
 		mut ftell := u64(16)
 		for {
-			block := gim.get_block_header(input_file, ftell)
-			println(block)
+			block := gim.get_block_header(input_gim_file, ftell)
 			match block.block_type {
-				0x04, 0x05 { println(gim.get_image_header(input_file, ftell + gim.gim_header_length)) }
+				0x05 {
+					for i in 0 .. 256 {
+						bgr := int(utils.bytes_to_u32(input_gim_file.read_bytes_at(2, ftell + 0x50 + u64(i * 2))))
+						palette.pixels[i] = utils.bgr565_to_rgb888(bgr)
+					}
+				}
 				else {}
 			}
 			ftell = block.next_block_location
@@ -38,4 +71,5 @@ fn main() {
 			}
 		}
 	}
+	palette.write(os.args[2])
 }
