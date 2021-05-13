@@ -14,10 +14,11 @@ pub fn bgr565_to_rgb888(input int) vpng.Pixel {
 	})
 }
 
-pub fn rgb888_to_bgr565(pixel vpng.Pixel) int {
+pub fn rgb888_to_bgr565(red byte, green byte, blue byte) int {
 	// https://stackoverflow.com/a/9069480
-	b := (pixel.blue * 249 + 1014) >> 11
-	g := (pixel.green * 253 + 505) >> 10
-	r := (pixel.red * 249 + 1014) >> 11
+	b := (blue * 249 + 1014) >> 11
+	g := (green * 253 + 505) >> 10
+	r := (red * 249 + 1014) >> 11
 	bgr := (b << 11) + (g << 5) + r
+	return bgr
 }
