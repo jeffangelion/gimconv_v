@@ -31,7 +31,7 @@ fn pixel(red byte, green byte, blue byte) vpng.Pixel {
 
 fn main() {
 	if os.args.len != 3{
-		println('Usage: $os.args[0] input_gim_file output_png_palette')
+		println('Usage: ' + os.args[0] + ' input_gim_file output_png_palette')
 		return
 	}
 	palette_ihdr := vpng.IHDR {
